@@ -30,6 +30,10 @@ export default function RootLayout({
 <meta property="og:image:type" content="<generated>" />
 <meta property="og:image:width" content="<generated>" />
 <meta property="og:image:height" content="<generated>" />
+<meta property="og:site_name" content="Link preview site name" />
+<meta property="og:title" content="Link preview title" />
+<meta property="og:description" content="Link preview description" />
+<meta property="og:url" content="Canonical link preview URL" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
