@@ -26,14 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <meta property="og:image" content="<generated>" />
+      <meta property="og:image" content="https://www.danceclash.vercel.app/images/tensor1.gif" />
 <meta property="og:image:type" content="<generated>" />
 <meta property="og:image:width" content="<generated>" />
 <meta property="og:image:height" content="<generated>" />
 <meta property="og:site_name" content="https://www.danceclash.vercel.app" />
 <meta property="og:title" content="Dance Clash" />
 <meta property="og:description" content="Challange Your Friends To A Dance Battle" />
-<meta property="twitter:image" content=""></meta>
+<meta property="twitter:image" content="https://www.danceclash.vercel.app/images/tensor1.gif"></meta>
 <meta property="twitter:card" content="summary_large_image"></meta>
 <meta property="twitter:description" content="Challange Your Friends To A Dance Battle"></meta>
 <meta property="twitter:title" content="Dance Clash"></meta>
