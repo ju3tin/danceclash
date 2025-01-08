@@ -9,12 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tensorflow-models/posenet": "^2.2.2",
-    "@tensorflow/tfjs-backend-cpu": "^4.22.0",
-    "@tensorflow/tfjs-backend-webgl": "^4.22.0",
-    "@tensorflow/tfjs-converter": "^4.22.0",
-    "@tensorflow/tfjs-core": "^4.22.0",
-    "@tensorflow/tfjs-node": "^4.22.0",
+    "@tensorflow/tfjs": "^4.22.0",
     "@vercel/analytics": "^1.4.1",
     "axios": "^1.7.9",
     "canvas": "^3.0.1",
