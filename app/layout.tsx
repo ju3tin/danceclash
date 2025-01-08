@@ -31,12 +31,12 @@ export default function RootLayout({
 <meta property="og:image:width" content="<generated>" />
 <meta property="og:image:height" content="<generated>" />
 <meta property="og:site_name" content="Link preview site name" />
-<meta property="og:title" content="Link preview title" />
-<meta property="og:description" content="Link preview description" />
+<meta property="og:title" content="Dance Clash" />
+<meta property="og:description" content="Challange Your Friends To A Dance Battle" />
 <meta property="twitter:image" content="Twitter link preview image URL"></meta>
 <meta property="twitter:card" content="summary_large_image"></meta>
-<meta property="twitter:description" content="Twitter link preview description"></meta>
-<meta property="twitter:title" content="Twitter link preview title"></meta>
+<meta property="twitter:description" content="Challange Your Friends To A Dance Battle"></meta>
+<meta property="twitter:title" content="Dance Clash"></meta>
 <meta property="og:url" content="https://wwww.danceclash.vercel.app"></meta>
       </head>
       <body
