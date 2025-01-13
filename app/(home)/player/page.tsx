@@ -1,68 +1,101 @@
+// pages/index.tsx
+
 "use client"
-import Image from "next/image";
-import Video from 'next-video';
-//import getStarted from ''';
-import Footer from "../../components/footer";
-import axios from "axios";
-import { useEffect, useState, useRef} from 'react';
-import axiosInstance from '../../../lib/axiosInstance';
+import { useEffect, useRef } from "react";
 import * as posedetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
+import * as tf from '@tensorflow/tfjs-core';
 
-
-interface GameItem {
-  imageUrl: string;
-  title: string;
-  descreption: string;
-  link: string;
-}
-
-export default function Home() {
-  const [data, setData] = useState<GameItem[] | null>(null);
+const HomePage = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    axiosInstance.get('/assets/js/gamelist.json') // Replace with your API endpoint
-      .then(response => {
-        setData(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+    let detector: posedetection.PoseDetector | null = null;
+
+    const initializeMoveNet = async () => {
+      // Set up TensorFlow.js backend
+      await tf.setBackend("webgl");
+
+      // Load the MoveNet model
+      detector = await posedetection.createDetector(posedetection.SupportedModels.MoveNet);
+
+      // Start the video stream
+      if (videoRef.current) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480 },
+        });
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+
+      // Start detecting poses
+      detectPoses();
+    };
+
+    const detectPoses = async () => {
+      if (!detector || !videoRef.current || !canvasRef.current) return;
+
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) return;
+
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        requestAnimationFrame(detectPoses);
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const detect = async () => {
+        const poses = await detector?.estimatePoses(video);
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the video feed
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Draw poses
+        poses?.forEach((pose) => {
+          pose.keypoints.forEach((keypoint) => {
+            if (keypoint.score && keypoint.score > 0.5) {
+              ctx.beginPath();
+              ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
+              ctx.fillStyle = "red";
+              ctx.fill();
+            }
+          });
+        });
+
+        requestAnimationFrame(detect);
+      };
+
+      detect();
+    };
+
+    initializeMoveNet();
+
+    return () => {
+      // Cleanup resources
+      detector?.dispose();
+      if (videoRef.current?.srcObject) {
+        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+        tracks.forEach((track) => track.stop());
+      }
+    };
   }, []);
+
   return (
- 
-  
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-     {/* <Video className="video3" src="/videos/1.mp4" /> */}
-      <video width="320" height="240" controls preload="none">
-      <source src="/videos/1.mp4" type="video/mp4" />
-      <track
-        src="/path/to/captions.vtt"
-        kind="subtitles"
-        srcLang="en"
-        label="English"
-      />
-      Your browser does not support the video tag.
-    </video>
-    <canvas ref={canvasRef} style={{ border: "1px solid black" }} />
-       
-    {data ? (
-      <div className="gallery grid grid-cols-3 gap-4">
-        {data.map((item, index) => (
-          <div key={index} className="gallery-item">
-      <a href={item.link}>      <img src={item.imageUrl} alt={item.title} className="w-full h-auto" />
-            <h2>{item.descreption}</h2></a>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p>Loading...</p>
-    )}
-       
-      </main>
-    <Footer></Footer>
+    <div style={{ textAlign: "center" }}>
+      <h1>TensorFlow MoveNet with Next.js</h1>
+      <video ref={videoRef} style={{ width: "640px", height: "480px" }} />
+      <canvas ref={canvasRef} style={{ border: "1px solid black" }} />
     </div>
   );
-}
+};
+
+export default HomePage;
