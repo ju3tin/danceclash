@@ -26,6 +26,7 @@ const HomePage = () => {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const remoteCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [videoUrl, setVideoUrl] = useState("/videos/1.mp4");
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json')
@@ -69,23 +70,42 @@ const HomePage = () => {
       canvas.height = video.videoHeight;
 
       const detect = async () => {
-        const poses = await detector?.estimatePoses(video);
+        try {
+          // Ensure video is playing
+          if (video.paused || video.ended) {
+            requestAnimationFrame(detect);
+            return;
+          }
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        poses?.forEach((pose) => {
-          pose.keypoints.forEach((keypoint) => {
-            if (keypoint.score && keypoint.score > 0.5) {
-              ctx.beginPath();
-              ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
-              ctx.fillStyle = "red";
-              ctx.fill();
-            }
+          const poses = await detector?.estimatePoses(video, {
+            flipHorizontal: false
           });
-        });
 
-        requestAnimationFrame(detect);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          if (poses && poses.length > 0) {
+            poses.forEach((pose) => {
+              pose.keypoints.forEach((keypoint) => {
+                if (keypoint.score && keypoint.score > 0.5) {
+                  ctx.beginPath();
+                  ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
+                  ctx.fillStyle = "red";
+                  ctx.fill();
+                }
+              });
+            });
+          }
+
+          // Use setTimeout instead of requestAnimationFrame to give time for tensor cleanup
+          setTimeout(() => {
+            requestAnimationFrame(detect);
+          }, 0);
+          
+        } catch (error) {
+          console.error('Detection error:', error);
+          requestAnimationFrame(detect);
+        }
       };
 
       detect();
@@ -102,9 +122,27 @@ const HomePage = () => {
     };
   }, []);
 
+  const handlePlayVideo = () => {
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.play();
+    }
+  };
+
+  const handleVideoChange = (newUrl: string) => {
+    setVideoUrl(newUrl);
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.load(); // Reload video with new source
+    }
+  };
+
   return (
     <div style={{ textAlign: "center" }}>
       <h1>TensorFlow MoveNet with Next.js</h1>
+      <div style={{ marginBottom: "20px" }}>  
+        <button onClick={() => handleVideoChange("/videos/1.mp4")}>Video 1</button>
+        <button onClick={() => handleVideoChange("/videos/2.mp4")}>Video 2</button>
+        <button onClick={() => handleVideoChange("/videos/3.mp4")}>Video 3</button>
+      </div>
       <div style={{ 
         display: "flex", 
         justifyContent: "center", 
@@ -125,16 +163,15 @@ const HomePage = () => {
           />
         </div>
 
-        <div style={{ position: "relative", width: "640px", height: "480px" }}>
+        <div style={{ position: "relative", width: "640px" }}>
           <video 
             ref={remoteVideoRef} 
             className="remotevideo" 
-            width="640" 
-            height="480" 
-            controls 
+            width="640"
+            style={{ width: "100%" }}
             preload="yes"
           >
-            <source src="/videos/1.mp4" type="video/mp4" />
+            <source src={videoUrl} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <canvas 
@@ -143,17 +180,42 @@ const HomePage = () => {
               position: "absolute",
               top: 0,
               left: 0,
-              width: "640",
-              height: "480"
+              width: "100%"
             }} 
           />
+          <button 
+            onClick={handlePlayVideo}
+            style={{
+              position: "absolute",
+              bottom: "10px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 10,
+              padding: "8px 16px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Play Video
+          </button>
         </div>
       </div>
       {data ? (
         <div className="gallery grid grid-cols-3 gap-4">
           {data.map((item, index) => (
             <div key={index} className="gallery-item">
-              <a href={item.link}>
+              <a 
+                onClick={() => handleVideoChange("/videos/1.mp4")} 
+                style={{ 
+                  cursor: 'pointer',
+                  display: 'block',
+                  transition: 'transform 0.2s'
+                }}
+                className="hover:opacity-80 hover:scale-105 transform transition-all"
+              >
                 <img src={item.imageUrl} alt={item.title} className="w-full h-auto" />
                 <h2>{item.descreption}</h2>
               </a>
