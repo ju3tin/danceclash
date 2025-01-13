@@ -31,7 +31,6 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
        
        
-      <h1 id="data-from-api">Data from API</h1>
     {data ? (
       <div className="gallery grid grid-cols-3 gap-4">
         {data.map((item, index) => (
