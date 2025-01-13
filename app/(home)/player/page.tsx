@@ -28,6 +28,7 @@ const HomePage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const remoteCanvasRef = useRef<HTMLCanvasElement>(null);
   const [videoUrl, setVideoUrl] = useState("/videos/1.mp4");
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json')
@@ -98,6 +99,19 @@ const HomePage = () => {
             });
           }
 
+          // Draw countdown if active
+          if (countdown) {
+            ctx.font = '120px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(
+              countdown.toString(),
+              canvas.width / 2,
+              canvas.height / 2
+            );
+          }
+
           // Use setTimeout instead of requestAnimationFrame to give time for tensor cleanup
           setTimeout(() => {
             requestAnimationFrame(detect);
@@ -134,6 +148,23 @@ const HomePage = () => {
     if (remoteVideoRef.current) {
       remoteVideoRef.current.load(); // Reload video with new source
     }
+  };
+
+  const startCountdown = () => {
+    setCountdown(3); // Start at 3 seconds
+    
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev === null || prev <= 1) {
+          clearInterval(timer);
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.play();
+          }
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
   return (
@@ -188,7 +219,8 @@ const HomePage = () => {
             }} 
           />
           <button 
-            onClick={handlePlayVideo}
+            onClick={startCountdown}
+            disabled={countdown !== null}
             style={{
               position: "absolute",
               bottom: "10px",
@@ -196,14 +228,14 @@ const HomePage = () => {
               transform: "translateX(-50%)",
               zIndex: 10,
               padding: "8px 16px",
-              backgroundColor: "#4CAF50",
+              backgroundColor: countdown !== null ? "#888" : "#4CAF50",
               color: "white",
               border: "none",
               borderRadius: "4px",
-              cursor: "pointer"
+              cursor: countdown !== null ? "default" : "pointer"
             }}
           >
-            Play Video
+            {countdown !== null ? `Starting in ${countdown}...` : 'Play Video'}
           </button>
         </div>
       </div>
