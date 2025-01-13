@@ -139,11 +139,7 @@ const HomePage = () => {
   return (
     <div style={{ textAlign: "center" }}>
       <h1>TensorFlow MoveNet with Next.js</h1>
-      <div style={{ marginBottom: "20px" }}>  
-        <button onClick={() => handleVideoChange("/videos/1.mp4")}>Video 1</button>
-        <button onClick={() => handleVideoChange("/videos/2.mp4")}>Video 2</button>
-        <button onClick={() => handleVideoChange("/videos/3.mp4")}>Video 3</button>
-      </div>
+     
       <div style={{ 
         display: "flex", 
         justifyContent: "center", 
