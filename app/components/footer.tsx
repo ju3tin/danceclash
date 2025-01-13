@@ -34,7 +34,7 @@ export default function footer() {
 </a>
 <a
   className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-  href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+  href="https://fitclash.vercel.app"
   target="_blank"
   rel="noopener noreferrer"
 >
@@ -45,7 +45,7 @@ export default function footer() {
     width={16}
     height={16}
   />
-  Go to nextjs.org →
+  Go to fitclash →
 </a>
 </footer>
 )
