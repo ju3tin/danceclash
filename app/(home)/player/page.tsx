@@ -1,16 +1,39 @@
 // pages/index.tsx
 
 "use client"
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+
+import Image from "next/image";
+import Video from 'next-video';
+//import getStarted from ''';
+import Footer from "../../components/footer";
+import axios from "axios";
+import axiosInstance from '../../../lib/axiosInstance';
 import * as posedetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from '@tensorflow/tfjs-core';
 
+interface GameItem {
+  imageUrl: string;
+  title: string;
+  descreption: string;
+  link: string;
+}
+
 const HomePage = () => {
+  const [data, setData] = useState<GameItem[] | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    axiosInstance.get('/assets/js/gamelist.json') // Replace with your API endpoint
+    .then(response => {
+      setData(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+
     let detector: posedetection.PoseDetector | null = null;
 
     const initializeMoveNet = async () => {
@@ -105,6 +128,18 @@ const HomePage = () => {
           }} 
         />
       </div>
+      {data ? (
+      <div className="gallery grid grid-cols-3 gap-4">
+        {data.map((item, index) => (
+          <div key={index} className="gallery-item">
+      <a href={item.link}>      <img src={item.imageUrl} alt={item.title} className="w-full h-auto" />
+            <h2>{item.descreption}</h2></a>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p>Loading...</p>
+    )}
     </div>
   );
 };
