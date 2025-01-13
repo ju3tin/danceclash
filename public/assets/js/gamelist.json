@@ -1,12 +1,12 @@
 [
-    {"id":"1","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/1.png"},
-    {"id":"2","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/2.png"},
-    {"id":"3","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/3.png"},
-    {"id":"4","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/4.png"},
-    {"id":"5","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/5.png"},
-    {"id":"6","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/6.png"},
-    {"id":"7","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/7.png"},
-    {"id":"8","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/8.png"},
-    {"id":"9","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/9.png"},
-    {"id":"10","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/10.png"}
+    {"id":"1","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/1.png","link":"/we/game"},
+    {"id":"2","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/2.png","link":"/we/game"},
+    {"id":"3","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/3.png","link":"/we/game"},
+    {"id":"4","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/4.png","link":"/we/game"},
+    {"id":"5","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/5.png","link":"/we/game"},
+    {"id":"6","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/6.png","link":"/we/game"},
+    {"id":"7","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/7.png","link":"/we/game"},
+    {"id":"8","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/8.png","link":"/we/game"},
+    {"id":"9","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/9.png","link":"/we/game"},
+    {"id":"10","descreption":"sdfsdf","image":"/jes/wer.gr","imageUrl":"/images/10.png","link":"/we/game"}
 ]

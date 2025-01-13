@@ -9,6 +9,7 @@ interface GameItem {
   imageUrl: string;
   title: string;
   descreption: string;
+  link: string;
 }
 
 export default function Home() {
@@ -35,8 +36,8 @@ export default function Home() {
       <div className="gallery grid grid-cols-3 gap-4">
         {data.map((item, index) => (
           <div key={index} className="gallery-item">
-            <img src={item.imageUrl} alt={item.title} className="w-full h-auto" />
-            <h2>{item.descreption}</h2>
+      <a href={item.link}>      <img src={item.imageUrl} alt={item.title} className="w-full h-auto" />
+            <h2>{item.descreption}</h2></a>
           </div>
         ))}
       </div>
