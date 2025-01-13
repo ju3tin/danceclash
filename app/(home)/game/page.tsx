@@ -9,7 +9,7 @@ export default function Home() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    axiosInstance.get('/products/1') // Replace with your API endpoint
+    axiosInstance.get('/assets/js/gamelist.json') // Replace with your API endpoint
       .then(response => {
         setData(response.data);
       })
