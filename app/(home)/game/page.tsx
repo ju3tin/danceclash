@@ -5,8 +5,14 @@ import axios from "axios";
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../../lib/axiosInstance';
 
+interface GameItem {
+  imageUrl: string;
+  title: string;
+  descreption: string;
+}
+
 export default function Home() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<GameItem[] | null>(null);
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json') // Replace with your API endpoint
@@ -26,7 +32,17 @@ export default function Home() {
        
       <h1 id="data-from-api">Data from API</h1>
     {data ? (
-      <pre>{JSON.stringify(data, null, 2)}</pre>) : (<p>Loading...</p> )}
+      <div className="gallery grid grid-cols-3 gap-4">
+        {data.map((item, index) => (
+          <div key={index} className="gallery-item">
+            <img src={item.imageUrl} alt={item.title} className="w-full h-auto" />
+            <h2>{item.descreption}</h2>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p>Loading...</p>
+    )}
         <Image
           className="dark:invert"
           src="/next.svg"
