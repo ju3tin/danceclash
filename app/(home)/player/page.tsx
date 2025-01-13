@@ -209,7 +209,7 @@ const HomePage = () => {
           {data.map((item, index) => (
             <div key={index} className="gallery-item">
               <a 
-                onClick={() => handleVideoChange("/videos/1.mp4")} 
+                onClick={() => handleVideoChange(item.video)} 
                 style={{ 
                   cursor: 'pointer',
                   display: 'block',
