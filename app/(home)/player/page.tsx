@@ -92,8 +92,19 @@ const HomePage = () => {
   return (
     <div style={{ textAlign: "center" }}>
       <h1>TensorFlow MoveNet with Next.js</h1>
-      <video ref={videoRef} style={{ width: "640px", height: "480px" }} />
-      <canvas ref={canvasRef} style={{ border: "1px solid black" }} />
+      <div style={{ position: "relative", width: "640px", height: "480px", margin: "0 auto" }}>
+        <video ref={videoRef} style={{ width: "100%", height: "100%" }} />
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%"
+          }} 
+        />
+      </div>
     </div>
   );
 };
