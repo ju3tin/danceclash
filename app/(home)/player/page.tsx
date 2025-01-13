@@ -18,6 +18,7 @@ interface GameItem {
   title: string;
   descreption: string;
   link: string;
+  video: string;
 }
 
 const HomePage = () => {
