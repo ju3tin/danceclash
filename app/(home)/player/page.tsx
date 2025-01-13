@@ -127,6 +127,11 @@ const HomePage = () => {
             height: "100%"
           }} 
         />
+          <video width="320" height="240" controls preload="yes">
+      <source src="/videos/1.mp4" type="video/mp4" />
+    
+      Your browser does not support the video tag.
+    </video>
       </div>
       {data ? (
       <div className="gallery grid grid-cols-3 gap-4">
