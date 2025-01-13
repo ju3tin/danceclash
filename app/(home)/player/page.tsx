@@ -165,7 +165,12 @@ const HomePage = () => {
             ref={remoteVideoRef} 
             className="remotevideo" 
             width="640"
-            style={{ width: "100%" }}
+            style={{ 
+              height: "100%",
+              maxHeight: "100vh",
+              objectFit: "contain",
+              display: "none"
+            }}
             preload="yes"
           >
             <source src={videoUrl} type="video/mp4" />
@@ -177,7 +182,9 @@ const HomePage = () => {
               position: "absolute",
               top: 0,
               left: 0,
-              width: "100%"
+             
+              height: "100%",
+              maxHeight: "100vh"
             }} 
           />
           <button 
