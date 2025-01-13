@@ -4,8 +4,11 @@ import Video from 'next-video';
 //import getStarted from ''';
 import Footer from "../../components/footer";
 import axios from "axios";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef} from 'react';
 import axiosInstance from '../../../lib/axiosInstance';
+import * as posedetection from "@tensorflow-models/pose-detection";
+import "@tensorflow/tfjs-backend-webgl";
+
 
 interface GameItem {
   imageUrl: string;
@@ -16,6 +19,7 @@ interface GameItem {
 
 export default function Home() {
   const [data, setData] = useState<GameItem[] | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json') // Replace with your API endpoint
@@ -42,6 +46,7 @@ export default function Home() {
       />
       Your browser does not support the video tag.
     </video>
+    <canvas ref={canvasRef} style={{ border: "1px solid black" }} />
        
     {data ? (
       <div className="gallery grid grid-cols-3 gap-4">
