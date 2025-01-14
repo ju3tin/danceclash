@@ -38,9 +38,8 @@ const HomePage = () => {
     const urlSearch = searchParams.get('idurl');
     setSearch(urlSearch || '1');
     console.log('this is the 1 ' + urlSearch);
-  }, [searchParams]);
+ 
 
-  useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json')
       .then(response => {
         setData(response.data);
@@ -173,7 +172,7 @@ const HomePage = () => {
         tracks.forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, [searchParams]);
 
   const handlePlayVideo = () => {
     if (remoteVideoRef.current) {
@@ -245,7 +244,7 @@ const HomePage = () => {
             preload="yes"
           >
             <source 
-              src={`/videos/${search || '1'}.mp4`} 
+              src={`/videos/${searchParams.get('idurl') || '1'}.mp4`} 
               type="video/mp4" 
             />
             Your browser does not support the video tag.
