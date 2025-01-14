@@ -22,6 +22,13 @@ interface GameItem {
   video: string;
 }
 
+const SearchWrapper = () => {
+  const searchParams = useSearchParams();
+  const search = searchParams.get('idurl');
+  console.log('this is the 1 '+search);
+  return null;
+};
+
 const HomePage = () => {
   const [data, setData] = useState<GameItem[] | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -30,9 +37,6 @@ const HomePage = () => {
   const remoteCanvasRef = useRef<HTMLCanvasElement>(null);
   const [videoUrl, setVideoUrl] = useState("/videos/1.mp4");
   const [countdown, setCountdown] = useState<number | null>(null);
-  const searchParams = useSearchParams();
-  const search = searchParams.get('idurl');
-  console.log('this is the 1 '+search);
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json')
@@ -203,9 +207,9 @@ const HomePage = () => {
     
     <div style={{ textAlign: "center" }}>
       <h1>TensorFlow MoveNet with Next.js</h1>
-      <Suspense>
-      <search />
-    </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        <SearchWrapper />
+      </Suspense>
       <div style={{ 
         display: "flex", 
         justifyContent: "center", 
