@@ -244,11 +244,7 @@ const HomePage = () => {
             }}
             preload="yes"
           >
-            {search ? (
-              <source src={`/videos/${search}.mp4`} type="video/mp4" />
-            ) : (
-              <source src="" type="video/mp4" />
-            )}
+            <source src={`/videos/${search}.mp4`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <canvas 
