@@ -254,7 +254,7 @@ const HomePage = () => {
             style={{ 
               position: "absolute",
               top: 0,
-              left: "50%",
+              left: 0,
               height: "100%",
              maxHeight: "100vh",
               backgroundImage: `url("/images/${searchParams.get('idurl')}.png")`, // Set your background image here
@@ -267,7 +267,7 @@ const HomePage = () => {
               style={{ 
                 position: "absolute",
                 top: 0,
-                left: "50%",
+                left: 0,
                 height: "100%",
                 maxHeight: "100vh",
                 backgroundImage: `url("/images/${searchParams.get('idurl')}.png")`, // Set your background image here
