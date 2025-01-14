@@ -21,6 +21,7 @@ interface GameItem {
   descreption: string;
   link: string;
   video: string;
+  id: string;
 }
 
 const HomePage = () => {
@@ -287,8 +288,8 @@ const HomePage = () => {
             <div key={index} className="gallery-item">
               <a 
                 onClick={() => {
-                  handleVideoChange(item.video);
-                  window.location.href = item.link; // Navigate to the URL
+               //   handleVideoChange(item.video);
+                  window.location.href = '/player?idurl='+item.id; // Navigate to the URL
                 }} 
                 style={{ 
                   cursor: 'pointer',
