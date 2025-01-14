@@ -88,12 +88,40 @@ const HomePage = () => {
 
           if (poses && poses.length > 0) {
             poses.forEach((pose) => {
+              // Draw keypoints
               pose.keypoints.forEach((keypoint) => {
-                if (keypoint.score && keypoint.score > 0.5) {
+                if (keypoint.score && keypoint.score > 0.3) {
                   ctx.beginPath();
                   ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
                   ctx.fillStyle = "red";
                   ctx.fill();
+                }
+              });
+
+              // Draw skeleton lines
+              const connections = [
+                ['nose', 'left_eye'], ['nose', 'right_eye'],
+                ['left_eye', 'left_ear'], ['right_eye', 'right_ear'],
+                ['left_shoulder', 'right_shoulder'],
+                ['left_shoulder', 'left_elbow'], ['right_shoulder', 'right_elbow'],
+                ['left_elbow', 'left_wrist'], ['right_elbow', 'right_wrist'],
+                ['left_shoulder', 'left_hip'], ['right_shoulder', 'right_hip'],
+                ['left_hip', 'right_hip'],
+                ['left_hip', 'left_knee'], ['right_hip', 'right_knee'],
+                ['left_knee', 'left_ankle'], ['right_knee', 'right_ankle']
+              ];
+
+              connections.forEach(([p1, p2]) => {
+                const point1 = pose.keypoints.find(kp => kp.name === p1);
+                const point2 = pose.keypoints.find(kp => kp.name === p2);
+
+                if (point1?.score && point2?.score && point1.score > 0.3 && point2.score > 0.3) {
+                  ctx.beginPath();
+                  ctx.moveTo(point1.x, point1.y);
+                  ctx.lineTo(point2.x, point2.y);
+                  ctx.strokeStyle = "yellow";
+                  ctx.lineWidth = 2;
+                  ctx.stroke();
                 }
               });
             });
