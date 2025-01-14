@@ -1,8 +1,7 @@
 // pages/index.tsx
 
 "use client"
-import { useEffect, useState, useRef } from "react";
-import { Suspense } from 'react'
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from 'next/navigation'
 import Image from "next/image";
 import Video from 'next-video';
@@ -24,7 +23,8 @@ interface GameItem {
   id: string;
 }
 
-const HomePage = () => {
+// Create a separate component for the main content
+const PlayerContent = () => {
   const [data, setData] = useState<GameItem[] | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -208,9 +208,6 @@ const HomePage = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <div></div>
-      </Suspense>
       <div style={{ 
         display: "flex", 
         justifyContent: "center", 
@@ -337,6 +334,24 @@ const HomePage = () => {
         <p>Loading...</p>
       )}
     </div>
+  );
+};
+
+// Main page component
+const HomePage = () => {
+  return (
+    <Suspense fallback={
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh'
+      }}>
+        <div>Loading...</div>
+      </div>
+    }>
+      <PlayerContent />
+    </Suspense>
   );
 };
 
