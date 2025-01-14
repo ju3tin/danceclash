@@ -13,6 +13,7 @@ import axiosInstance from '../../../lib/axiosInstance';
 import * as posedetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from '@tensorflow/tfjs-core';
+import { search } from "@tensorflow/tfjs-core/dist/io/composite_array_buffer";
 
 interface GameItem {
   imageUrl: string;
@@ -22,13 +23,6 @@ interface GameItem {
   video: string;
 }
 
-const SearchWrapper = () => {
-  const searchParams = useSearchParams();
-  const search = searchParams.get('idurl');
-  console.log('this is the 1 '+search);
-  return null;
-};
-
 const HomePage = () => {
   const [data, setData] = useState<GameItem[] | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -37,6 +31,14 @@ const HomePage = () => {
   const remoteCanvasRef = useRef<HTMLCanvasElement>(null);
   const [videoUrl, setVideoUrl] = useState("/videos/1.mp4");
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [search, setSearch] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const search = searchParams.get('idurl');
+    console.log('this is the 1 ' + search);
+    setSearch(search);
+  }, [searchParams]);
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json')
@@ -208,7 +210,6 @@ const HomePage = () => {
     <div style={{ textAlign: "center" }}>
       <h1>TensorFlow MoveNet with Next.js</h1>
       <Suspense fallback={<div>Loading...</div>}>
-        <SearchWrapper />
       </Suspense>
       <div style={{ 
         display: "flex", 
@@ -243,7 +244,11 @@ const HomePage = () => {
             }}
             preload="yes"
           >
-            <source src={videoUrl} type="video/mp4" />
+            {search ? (
+              <source src={`/videos/${search}.mp4`} type="video/mp4" />
+            ) : (
+              <source src="" type="video/mp4" /> // Placeholder or empty source
+            )}
             Your browser does not support the video tag.
           </video>
           <canvas 
