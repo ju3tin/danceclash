@@ -34,6 +34,7 @@ const HomePage = () => {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [search, setSearch] = useState<string | null>(null);
   const searchParams = useSearchParams();
+  const [score, setScore] = useState(0);
 
   useEffect(() => {
     const urlSearch = searchParams.get('idurl');
@@ -291,6 +292,19 @@ const HomePage = () => {
           >
             {countdown !== null ? `Starting in ${countdown}...` : 'Play Video'}
           </button>
+          <div 
+            style={{ 
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              fontSize: "48px", // Adjust font size as needed
+              color: "white", // Change color as needed
+              zIndex: 20 // Ensure it appears above other elements
+            }}
+          >
+            Score: {score}
+          </div>
         </div>
       </div>
       {data ? (
