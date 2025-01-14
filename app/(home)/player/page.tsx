@@ -250,17 +250,29 @@ const HomePage = () => {
             />
             Your browser does not support the video tag.
           </video>
-          <canvas 
-            ref={remoteCanvasRef} 
+          <div 
             style={{ 
               position: "absolute",
               top: 0,
               left: 0,
-             
+              width: "100%",
               height: "100%",
-              maxHeight: "100vh"
+              backgroundImage: `url("/images/${searchParams.get('idurl')}.png")`, // Set your background image here
+              backgroundSize: 'cover', // Adjusts the image to cover the entire div
+              backgroundPosition: 'center' // Centers the background image
             }} 
-          />
+          >
+            <canvas 
+              ref={remoteCanvasRef} 
+              style={{ 
+                position: "absolute",
+                top: 0,
+                left: 0,
+                height: "100%",
+                maxHeight: "100vh"
+              }} 
+            />
+          </div>
           <button 
             onClick={startCountdown}
             disabled={countdown !== null}
