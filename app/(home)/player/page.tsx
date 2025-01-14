@@ -206,10 +206,10 @@ const HomePage = () => {
   };
 
   return (
-    
     <div style={{ textAlign: "center" }}>
       <h1>TensorFlow MoveNet with Next.js</h1>
       <Suspense fallback={<div>Loading...</div>}>
+        <div></div>
       </Suspense>
       <div style={{ 
         display: "flex", 
