@@ -3,6 +3,7 @@
 "use client"
 import { useEffect, useState, useRef } from "react";
 
+import { useSearchParams } from 'next/navigation'
 import Image from "next/image";
 import Video from 'next-video';
 //import getStarted from ''';
@@ -29,6 +30,9 @@ const HomePage = () => {
   const remoteCanvasRef = useRef<HTMLCanvasElement>(null);
   const [videoUrl, setVideoUrl] = useState("/videos/1.mp4");
   const [countdown, setCountdown] = useState<number | null>(null);
+  const searchParams = useSearchParams();
+  const search = searchParams.get('idurl');
+  console.log(search);
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json')
