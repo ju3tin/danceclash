@@ -35,6 +35,8 @@ const HomePage = () => {
   const [search, setSearch] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const [score, setScore] = useState(0);
+  const [currentPose, setCurrentPose] = useState<any>(null);
+  const [remotePose, setRemotePose] = useState<any>(null);
 
   useEffect(() => {
     const urlSearch = searchParams.get('idurl');
@@ -64,18 +66,46 @@ const HomePage = () => {
         videoRef.current.play();
       }
 
-      detectPoses(videoRef.current, canvasRef.current);
-      detectPoses(remoteVideoRef.current, remoteCanvasRef.current);
+      detectPoses(videoRef.current, canvasRef.current, false);
+      detectPoses(remoteVideoRef.current, remoteCanvasRef.current, true);
     };
 
-    const detectPoses = async (video: HTMLVideoElement | null, canvas: HTMLCanvasElement | null) => {
+    const calculatePoseSimilarity = (pose1: any, pose2: any) => {
+      if (!pose1 || !pose2) return 0;
+      
+      let totalSimilarity = 0;
+      let pointCount = 0;
+
+      // Compare each keypoint
+      pose1.keypoints.forEach((keypoint1: any) => {
+        const keypoint2 = pose2.keypoints.find((kp: any) => kp.name === keypoint1.name);
+        
+        if (keypoint1.score > 0.3 && keypoint2?.score > 0.3) {
+          // Calculate Euclidean distance between points
+          const distance = Math.sqrt(
+            Math.pow(keypoint1.x - keypoint2.x, 2) + 
+            Math.pow(keypoint1.y - keypoint2.y, 2)
+          );
+          
+          // Convert distance to similarity (closer = higher score)
+          const similarity = Math.max(0, 1 - (distance / 100));
+          totalSimilarity += similarity;
+          pointCount++;
+        }
+      });
+
+      // Return average similarity scaled to 0-100
+      return pointCount > 0 ? (totalSimilarity / pointCount) * 100 : 0;
+    };
+
+    const detectPoses = async (video: HTMLVideoElement | null, canvas: HTMLCanvasElement | null, isRemote: boolean) => {
       if (!detector || !video || !canvas) return;
 
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       if (video.videoWidth === 0 || video.videoHeight === 0) {
-        requestAnimationFrame(() => detectPoses(video, canvas));
+        requestAnimationFrame(() => detectPoses(video, canvas, isRemote));
         return;
       }
 
@@ -98,43 +128,54 @@ const HomePage = () => {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
           if (poses && poses.length > 0) {
-            poses.forEach((pose) => {
-              // Draw keypoints
-              pose.keypoints.forEach((keypoint) => {
-                if (keypoint.score && keypoint.score > 0.3) {
-                  ctx.beginPath();
-                  ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
-                  ctx.fillStyle = "red";
-                  ctx.fill();
-                }
-              });
+            // Store the detected pose
+            if (isRemote) {
+              setRemotePose(poses[0]);
+            } else {
+              setCurrentPose(poses[0]);
+              
+              // Calculate similarity score if both poses are available
+              if (remotePose) {
+                const similarity = calculatePoseSimilarity(poses[0], remotePose);
+                setScore(Math.round(similarity));
+              }
+            }
 
-              // Draw skeleton lines
-              const connections = [
-                ['nose', 'left_eye'], ['nose', 'right_eye'],
-                ['left_eye', 'left_ear'], ['right_eye', 'right_ear'],
-                ['left_shoulder', 'right_shoulder'],
-                ['left_shoulder', 'left_elbow'], ['right_shoulder', 'right_elbow'],
-                ['left_elbow', 'left_wrist'], ['right_elbow', 'right_wrist'],
-                ['left_shoulder', 'left_hip'], ['right_shoulder', 'right_hip'],
-                ['left_hip', 'right_hip'],
-                ['left_hip', 'left_knee'], ['right_hip', 'right_knee'],
-                ['left_knee', 'left_ankle'], ['right_knee', 'right_ankle']
-              ];
+            // Draw keypoints
+            poses[0].keypoints.forEach((keypoint) => {
+              if (keypoint.score && keypoint.score > 0.3) {
+                ctx.beginPath();
+                ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = "red";
+                ctx.fill();
+              }
+            });
 
-              connections.forEach(([p1, p2]) => {
-                const point1 = pose.keypoints.find(kp => kp.name === p1);
-                const point2 = pose.keypoints.find(kp => kp.name === p2);
+            // Draw skeleton lines
+            const connections = [
+              ['nose', 'left_eye'], ['nose', 'right_eye'],
+              ['left_eye', 'left_ear'], ['right_eye', 'right_ear'],
+              ['left_shoulder', 'right_shoulder'],
+              ['left_shoulder', 'left_elbow'], ['right_shoulder', 'right_elbow'],
+              ['left_elbow', 'left_wrist'], ['right_elbow', 'right_wrist'],
+              ['left_shoulder', 'left_hip'], ['right_shoulder', 'right_hip'],
+              ['left_hip', 'right_hip'],
+              ['left_hip', 'left_knee'], ['right_hip', 'right_knee'],
+              ['left_knee', 'left_ankle'], ['right_knee', 'right_ankle']
+            ];
 
-                if (point1?.score && point2?.score && point1.score > 0.3 && point2.score > 0.3) {
-                  ctx.beginPath();
-                  ctx.moveTo(point1.x, point1.y);
-                  ctx.lineTo(point2.x, point2.y);
-                  ctx.strokeStyle = "yellow";
-                  ctx.lineWidth = 2;
-                  ctx.stroke();
-                }
-              });
+            connections.forEach(([p1, p2]) => {
+              const point1 = poses[0].keypoints.find(kp => kp.name === p1);
+              const point2 = poses[0].keypoints.find(kp => kp.name === p2);
+
+              if (point1?.score && point2?.score && point1.score > 0.3 && point2.score > 0.3) {
+                ctx.beginPath();
+                ctx.moveTo(point1.x, point1.y);
+                ctx.lineTo(point2.x, point2.y);
+                ctx.strokeStyle = "yellow";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+              }
             });
           }
 
@@ -336,6 +377,22 @@ const HomePage = () => {
       ) : (
         <p>Loading...</p>
       )}
+      <div 
+        style={{ 
+          position: "absolute",
+          top: "10px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          fontSize: "24px",
+          color: "white",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          padding: "10px 20px",
+          borderRadius: "5px",
+          zIndex: 20
+        }}
+      >
+        Score: {score}%
+      </div>
     </div>
   );
 };
