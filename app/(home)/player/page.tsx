@@ -35,9 +35,9 @@ const HomePage = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const search = searchParams.get('idurl');
-    console.log('this is the 1 ' + search);
-    setSearch(search);
+    const urlSearch = searchParams.get('idurl');
+    setSearch(urlSearch || '1');
+    console.log('this is the 1 ' + urlSearch);
   }, [searchParams]);
 
   useEffect(() => {
@@ -244,7 +244,10 @@ const HomePage = () => {
             }}
             preload="yes"
           >
-            <source src={`/videos/${search}.mp4`} type="video/mp4" />
+            <source 
+              src={`/videos/${search || '1'}.mp4`} 
+              type="video/mp4" 
+            />
             Your browser does not support the video tag.
           </video>
           <canvas 
