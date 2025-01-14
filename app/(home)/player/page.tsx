@@ -286,7 +286,10 @@ const HomePage = () => {
           {data.map((item, index) => (
             <div key={index} className="gallery-item">
               <a 
-                onClick={() => handleVideoChange(item.video)} 
+                onClick={() => {
+                  handleVideoChange(item.video);
+                  window.location.href = item.link; // Navigate to the URL
+                }} 
                 style={{ 
                   cursor: 'pointer',
                   display: 'block',
