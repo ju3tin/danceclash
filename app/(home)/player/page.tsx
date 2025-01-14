@@ -35,9 +35,6 @@ const PlayerContent = () => {
   const [search, setSearch] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const [score, setScore] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [remotePose, setRemotePose] = useState<posedetection.Pose | null>(null);
-  const [currentPose, setCurrentPose] = useState<posedetection.Pose | null>(null);
 
   useEffect(() => {
     const urlSearch = searchParams.get('idurl');
@@ -67,24 +64,29 @@ const PlayerContent = () => {
         videoRef.current.play();
       }
 
-      detectPoses(videoRef.current, canvasRef.current, false);
-      detectPoses(remoteVideoRef.current, remoteCanvasRef.current, true);
+      detectPoses(videoRef.current, canvasRef.current);
+      detectPoses(remoteVideoRef.current, remoteCanvasRef.current);
     };
 
-    const detectPoses = async (video: HTMLVideoElement | null, canvas: HTMLCanvasElement | null, isRemote: boolean) => {
+    const detectPoses = async (video: HTMLVideoElement | null, canvas: HTMLCanvasElement | null) => {
       if (!detector || !video || !canvas) return;
 
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        requestAnimationFrame(() => detectPoses(video, canvas));
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
       const detect = async () => {
         try {
-          // Skip detection if video is not playing
+          // Ensure video is playing
           if (video.paused || video.ended) {
-            requestAnimationFrame(() => detect());
+            requestAnimationFrame(detect);
             return;
           }
 
@@ -96,28 +98,67 @@ const PlayerContent = () => {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
           if (poses && poses.length > 0) {
-            if (isRemote) {
-              setRemotePose(poses[0]);
-            } else {
-              setCurrentPose(poses[0]);
-              
-              // Only calculate score if remote video is playing and we have isPlaying state true
-              if (remotePose && isPlaying && !remoteVideoRef.current?.paused) {
-                const similarity = calculatePoseSimilarity(poses[0], remotePose);
-                setScore(Math.round(similarity));
-              }
-            }
+            poses.forEach((pose) => {
+              // Draw keypoints
+              pose.keypoints.forEach((keypoint) => {
+                if (keypoint.score && keypoint.score > 0.3) {
+                  ctx.beginPath();
+                  ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
+                  ctx.fillStyle = "red";
+                  ctx.fill();
+                }
+              });
 
-            // Draw keypoints and skeleton...
-            poses[0].keypoints.forEach((keypoint) => {
-              // ... rest of drawing code
+              // Draw skeleton lines
+              const connections = [
+                ['nose', 'left_eye'], ['nose', 'right_eye'],
+                ['left_eye', 'left_ear'], ['right_eye', 'right_ear'],
+                ['left_shoulder', 'right_shoulder'],
+                ['left_shoulder', 'left_elbow'], ['right_shoulder', 'right_elbow'],
+                ['left_elbow', 'left_wrist'], ['right_elbow', 'right_wrist'],
+                ['left_shoulder', 'left_hip'], ['right_shoulder', 'right_hip'],
+                ['left_hip', 'right_hip'],
+                ['left_hip', 'left_knee'], ['right_hip', 'right_knee'],
+                ['left_knee', 'left_ankle'], ['right_knee', 'right_ankle']
+              ];
+
+              connections.forEach(([p1, p2]) => {
+                const point1 = pose.keypoints.find(kp => kp.name === p1);
+                const point2 = pose.keypoints.find(kp => kp.name === p2);
+
+                if (point1?.score && point2?.score && point1.score > 0.3 && point2.score > 0.3) {
+                  ctx.beginPath();
+                  ctx.moveTo(point1.x, point1.y);
+                  ctx.lineTo(point2.x, point2.y);
+                  ctx.strokeStyle = "yellow";
+                  ctx.lineWidth = 2;
+                  ctx.stroke();
+                }
+              });
             });
           }
 
-          requestAnimationFrame(() => detect());
+          // Draw countdown if active
+          if (countdown) {
+            ctx.font = '120px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(
+              countdown.toString(),
+              canvas.width / 2,
+              canvas.height / 2
+            );
+          }
+
+          // Use setTimeout instead of requestAnimationFrame to give time for tensor cleanup
+          setTimeout(() => {
+            requestAnimationFrame(detect);
+          }, 0);
+          
         } catch (error) {
           console.error('Detection error:', error);
-          requestAnimationFrame(() => detect());
+          requestAnimationFrame(detect);
         }
       };
 
@@ -149,8 +190,7 @@ const PlayerContent = () => {
   };
 
   const startCountdown = () => {
-    setCountdown(3);
-    setScore(0); // Reset score when starting
+    setCountdown(3); // Start at 3 seconds
     
     const timer = setInterval(() => {
       setCountdown(prev => {
@@ -158,7 +198,6 @@ const PlayerContent = () => {
           clearInterval(timer);
           if (remoteVideoRef.current) {
             remoteVideoRef.current.play();
-            setIsPlaying(true); // Set playing state to true
           }
           return null;
         }
@@ -166,27 +205,6 @@ const PlayerContent = () => {
       });
     }, 1000);
   };
-
-  useEffect(() => {
-    const video = remoteVideoRef.current;
-    if (!video) return;
-
-    const handleEnd = () => {
-      setIsPlaying(false);
-    };
-
-    const handlePause = () => {
-      setIsPlaying(false);
-    };
-
-    video.addEventListener('ended', handleEnd);
-    video.addEventListener('pause', handlePause);
-
-    return () => {
-      video.removeEventListener('ended', handleEnd);
-      video.removeEventListener('pause', handlePause);
-    };
-  }, [remoteVideoRef]);
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -219,9 +237,9 @@ const PlayerContent = () => {
               height: "100%",
               maxHeight: "100vh",
               objectFit: "contain",
-              display: isPlaying ? "block" : "none"
+              display: "none"
             }}
-            preload="auto"
+            preload="yes"
           >
             <source 
               src={`/videos/${searchParams.get('idurl') || '1'}.mp4`} 
@@ -281,12 +299,12 @@ const PlayerContent = () => {
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              fontSize: "48px",
-              color: "white",
-              zIndex: 20
+              fontSize: "48px", // Adjust font size as needed
+              color: "white", // Change color as needed
+              zIndex: 20 // Ensure it appears above other elements
             }}
           >
-            {isPlaying ? `Score: ${score}` : ''}
+            Score: {score}
           </div>
         </div>
       </div>
