@@ -32,7 +32,7 @@ const HomePage = () => {
   const [countdown, setCountdown] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const search = searchParams.get('idurl');
-  console.log(search);
+  console.log('this is the 1 '+search);
 
   useEffect(() => {
     axiosInstance.get('/assets/js/gamelist.json')
