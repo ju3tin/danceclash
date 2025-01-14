@@ -255,8 +255,8 @@ const HomePage = () => {
               position: "absolute",
               top: 0,
               left: 0,
-              width: "100%",
               height: "100%",
+             maxHeight: "100vh",
               backgroundImage: `url("/images/${searchParams.get('idurl')}.png")`, // Set your background image here
               backgroundSize: 'cover', // Adjusts the image to cover the entire div
               backgroundPosition: 'center' // Centers the background image
@@ -269,7 +269,11 @@ const HomePage = () => {
                 top: 0,
                 left: 0,
                 height: "100%",
-                maxHeight: "100vh"
+                maxHeight: "100vh",
+                backgroundImage: `url("/images/${searchParams.get('idurl')}.png")`, // Set your background image here
+                backgroundSize: 'cover', // Adjusts the image to cover the entire div
+                backgroundPosition: 'center' // Centers the background image
+             
               }} 
             />
           </div>
