@@ -2,7 +2,7 @@
 
 "use client"
 import { useEffect, useState, useRef } from "react";
-
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from "next/image";
 import Video from 'next-video';
@@ -200,9 +200,12 @@ const HomePage = () => {
   };
 
   return (
+    
     <div style={{ textAlign: "center" }}>
       <h1>TensorFlow MoveNet with Next.js</h1>
-     
+      <Suspense>
+      <search />
+    </Suspense>
       <div style={{ 
         display: "flex", 
         justifyContent: "center", 
