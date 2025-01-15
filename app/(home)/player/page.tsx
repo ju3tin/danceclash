@@ -190,7 +190,7 @@ const PlayerContent = () => {
   };
 
   const startCountdown = () => {
-    setCountdown(3); // Start at 3 seconds
+    setCountdown(5); // Start at 3 seconds
     
     const timer = setInterval(() => {
       setCountdown(prev => {
