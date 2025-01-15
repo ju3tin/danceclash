@@ -13,6 +13,7 @@ import * as posedetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from '@tensorflow/tfjs-core';
 import { search } from "@tensorflow/tfjs-core/dist/io/composite_array_buffer";
+import JSConfetti from 'js-confetti';
 
 interface GameItem {
   imageUrl: string;
@@ -35,6 +36,11 @@ const PlayerContent = () => {
   const [search, setSearch] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const [score, setScore] = useState(0);
+  const jsConfetti = useRef<JSConfetti | null>(null);
+
+  useEffect(() => {
+    jsConfetti.current = new JSConfetti();
+  }, []);
 
   useEffect(() => {
     const urlSearch = searchParams.get('idurl');
