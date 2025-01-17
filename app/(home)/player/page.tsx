@@ -221,7 +221,7 @@ const PlayerContent = () => {
         margin: "0 auto"
       }}>
         <div style={{ position: "relative", width: "640px", height: "480px" }}>
-          <video ref={videoRef} style={{ width: "100%", height: "100%" }} />
+          <video ref={videoRef} style={{ width: "100%", height: "100%" }} playsInline webkit-playsInline />
           <canvas 
             ref={canvasRef} 
             style={{ 
@@ -246,6 +246,7 @@ const PlayerContent = () => {
               display: "none"
             }}
             preload="yes"
+            playsInline webkit-playsInline
           >
             <source 
               src={`/videos/${searchParams.get('idurl') || '1'}.mp4`} 
