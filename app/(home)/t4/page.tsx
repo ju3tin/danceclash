@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 
 const DanceClash: React.FC = () => {
@@ -9,6 +11,7 @@ const DanceClash: React.FC = () => {
   useEffect(() => {
     const setupPoseDetection = async () => {
       const tf = await import("@tensorflow/tfjs");
+      await tf.ready();
       const poseDetection = await import("@tensorflow-models/pose-detection");
       const detector = await poseDetection.createDetector(
         poseDetection.SupportedModels.MoveNet,
