@@ -3,9 +3,38 @@ import * as poseDetection from '@tensorflow-models/pose-detection';
 import '@tensorflow/tfjs-backend-webgl';
 import * as tf from '@tensorflow/tfjs';
 
+// Add the videoSource prop to the PoseTracker component
+type PoseTrackerProps = {
+  videoSource: string;
+  onPoseUpdate: (poses: any) => void;
+  onStatusChange: (status: string) => void;
+};
 
+const PoseTracker: React.FC<PoseTrackerProps> = ({ videoSource, onPoseUpdate, onStatusChange }) => {
+  return (
+    <div>
+      <video
+        id="video"
+        autoPlay
+        muted
+        playsInline
+        style={{ display: 'block' }}
+        controls
+        src={videoSource}
+      />
+      <canvas
+        id="canvas"
+        style={{
+          width: '100%',
+          height: '100%',
+          border: '2px solid red',
+        }}
+      ></canvas>
+    </div>
+  );
+};
 
-const DanceClash = () => {
+const DanceClash: React.FC<{ videoSource: string }> = ({ videoSource }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -58,7 +87,7 @@ const DanceClash = () => {
         playsInline
         style={{ display: 'block' }}
         controls
-        src="/videos/1.mp4"
+        src={videoSource}
       />
       <canvas
         id="canvas"
@@ -73,4 +102,4 @@ const DanceClash = () => {
   );
 };
 
-export default DanceClash;
+export default PoseTracker;
