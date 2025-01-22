@@ -15,7 +15,7 @@ const DanceClashPage: React.FC = () => {
     <div>
       <h1>Dance Clash Game</h1>
       <DanceClash
-        videoSource="/path/to/your/video.mp4"
+        videoSource="/videos/1.mp4"
         onPoseUpdate={handlePoseUpdate}
         onStatusChange={handleStatusChange}
       />
